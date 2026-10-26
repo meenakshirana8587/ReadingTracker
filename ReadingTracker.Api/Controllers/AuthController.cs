@@ -1,10 +1,13 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using ReadingTracker.Domain;
+using ReadingTracker.Application.Auth;
+using ReadingTracker.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ReadingTracker.Api.Controllers;
 
@@ -14,16 +17,30 @@ public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _config;
+    private readonly IValidator<RegisterRequest> _registerValidator;
 
-    public AuthController(UserManager<ApplicationUser> userManager, IConfiguration config)
+    public AuthController(UserManager<ApplicationUser> userManager, 
+        IConfiguration config, 
+        IValidator<RegisterRequest> registerValidator)
     {
         _userManager = userManager;
         _config = config;
+        _registerValidator = registerValidator;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
+        var validationResult = await _registerValidator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            foreach (var error in validationResult.Errors)
+            {
+                ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+            }
+            return ValidationProblem(ModelState); // Returns 400 Bad Request with RFC 7807 format
+        }
+
         var user = new ApplicationUser
         {
             UserName = request.Email,
@@ -34,7 +51,11 @@ public class AuthController : ControllerBase
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors);
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(error.Code, error.Description);
+            }
+            return ValidationProblem(ModelState);
         }
 
         return CreatedAtAction(nameof(Register), new { id = user.Id, email = user.Email });
@@ -72,6 +93,3 @@ public class AuthController : ControllerBase
         return Ok(new { accessToken = tokenHandler.WriteToken(token) });
     }
 }
-
-public record RegisterRequest(string Email, string Password, string DisplayName);
-public record LoginRequest(string Email, string Password);

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ReadingTracker.Domain;
 using Microsoft.AspNetCore.Identity;
+using ReadingTracker.Domain.Entities;
 
 namespace ReadingTracker.Infrastructure
 {

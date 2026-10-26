@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ReadingTracker.Domain
+namespace ReadingTracker.Domain.Entities
 {
     public class ApplicationUser : IdentityUser<Guid>
     {

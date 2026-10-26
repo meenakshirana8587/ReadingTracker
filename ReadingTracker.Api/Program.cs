@@ -1,8 +1,11 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using ReadingTracker.Domain;
+using ReadingTracker.Application.Auth;
+using ReadingTracker.Domain.Constants;
+using ReadingTracker.Domain.Entities;
 using ReadingTracker.Infrastructure;
 using System.Text;
 
@@ -15,9 +18,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 2. Identity Core Setup
 builder.Services.AddIdentityCore<ApplicationUser>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = UserConstants.RequireDigit;
+    options.Password.RequiredLength = UserConstants.MinPasswordLength;
+    options.Password.RequireNonAlphanumeric = UserConstants.RequireNonAlphanumeric;
     options.User.RequireUniqueEmail = true;
 })
 .AddRoles<IdentityRole<Guid>>()
@@ -52,6 +55,8 @@ builder.Services.AddAuthorization(options =>
     // Example custom policy
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 // Add services to the container.
 

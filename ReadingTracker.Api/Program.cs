@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ReadingTracker.Api.Middleware;
 using ReadingTracker.Application.Auth;
 using ReadingTracker.Domain.Constants;
 using ReadingTracker.Domain.Entities;
@@ -65,7 +66,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Register RFC 7807 Problem Details support
+builder.Services.AddProblemDetails();
+
+// Register our custom GlobalExceptionHandler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
+
+// 1. MUST BE FIRST: Catches unhandled exceptions from any middleware or controller below it
+app.UseExceptionHandler();
+
+// 2. Automatically writes ProblemDetails JSON for empty 4xx/5xx responses (like 401 from [Authorize] or 404 on bad URLs)
+app.UseStatusCodePages();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

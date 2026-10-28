@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace ReadingTracker.Application.Auth
 {
-    public record LoginRequest([property: Required][property: EmailAddress] string Email,
-        [property: Required] string Password);
+    public record LoginRequest([Required][EmailAddress] string Email,
+        [Required] string Password);
 }

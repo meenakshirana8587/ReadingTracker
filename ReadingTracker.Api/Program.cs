@@ -80,6 +80,7 @@ app.UseExceptionHandler();
 // 2. Automatically writes ProblemDetails JSON for empty 4xx/5xx responses (like 401 from [Authorize] or 404 on bad URLs)
 app.UseStatusCodePages();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -87,7 +88,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UsePerformanceLogging();
+
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

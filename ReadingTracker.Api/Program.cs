@@ -5,9 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ReadingTracker.Api.Middleware;
 using ReadingTracker.Application.Auth;
+using ReadingTracker.Application.Services;
 using ReadingTracker.Domain.Constants;
 using ReadingTracker.Domain.Entities;
+using ReadingTracker.Domain.Interfaces;
 using ReadingTracker.Infrastructure;
+using ReadingTracker.Infrastructure.Repositories;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +63,10 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 // Add services to the container.
+builder.Services.AddScoped<IUserBookRepository, UserBookRepository>();
+
+// Services
+builder.Services.AddScoped<IUserBookService, UserBookService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

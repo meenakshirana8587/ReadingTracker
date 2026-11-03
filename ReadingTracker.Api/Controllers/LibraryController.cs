@@ -12,10 +12,12 @@ namespace ReadingTracker.Api.Controllers
     public class LibraryController : ControllerBase
     {
         private readonly IUserBookService _userBookService;
+        private readonly IReadingSessionService _readingSessionService;
 
-        public LibraryController(IUserBookService userBookService)
+        public LibraryController(IUserBookService userBookService, IReadingSessionService readingSessionService)
         {
             _userBookService = userBookService;
+            _readingSessionService = readingSessionService;
         }
 
         [HttpPost]
@@ -46,6 +48,43 @@ namespace ReadingTracker.Api.Controllers
             var library = await _userBookService.GetUserLibraryAsync(userId, cancellationToken);
 
             return Ok(library);
+        }
+
+        [HttpPost("{userBookId:guid}/sessions")]
+        public async Task<IActionResult> LogSession(Guid userBookId, [FromBody] LogSessionRequest request, CancellationToken cancellationToken)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == Guid.Empty) return Unauthorized();
+
+            try
+            {
+                var response = await _readingSessionService.LogSessionAsync(userId, userBookId, request, cancellationToken);
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Security Best Practice: Return 404 instead of 403.
+                // If we return 403 Forbidden, a hacker knows the userBookId actually exists.
+                // Returning 404 Not Found completely hides the existence of other users' data.
+                return NotFound("Library item not found.");
+            }
+        }
+
+        [HttpGet("{userBookId:guid}/sessions")]
+        public async Task<IActionResult> GetSessions(Guid userBookId, CancellationToken cancellationToken)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == Guid.Empty) return Unauthorized();
+
+            try
+            {
+                var sessions = await _readingSessionService.GetSessionsAsync(userId, userBookId, cancellationToken);
+                return Ok(sessions);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return NotFound("Library item not found.");
+            }
         }
 
         // Helper method to parse the Identity Claim

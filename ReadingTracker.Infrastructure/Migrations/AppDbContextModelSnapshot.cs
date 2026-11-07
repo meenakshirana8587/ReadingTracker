@@ -234,8 +234,14 @@ namespace ReadingTracker.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Genre")
+                        .HasColumnType("text");
+
                     b.Property<string>("ISBN")
                         .HasColumnType("text");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()

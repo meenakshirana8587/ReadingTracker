@@ -3,4 +3,5 @@
   <Project Path="ReadingTracker.Application/ReadingTracker.Application.csproj" Id="08a7f729-6805-4e7c-ad27-59497f13ea89" />
   <Project Path="ReadingTracker.Domain/ReadingTracker.Domain.csproj" Id="fe81f15a-888c-4dc6-8603-5175311a7a78" />
   <Project Path="ReadingTracker.Infrastructure/ReadingTracker.Infrastructure.csproj" Id="9ee17a84-379f-444c-8395-2b7d6606b4cf" />
+  <Project Path="ReadingTracker.Tests/ReadingTracker.Tests.csproj" />
 </Solution>

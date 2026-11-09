@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ReadingTracker.Api.Filters;
 using ReadingTracker.Application.DTOs;
 using ReadingTracker.Application.Services;
 using System.Security.Claims;
@@ -51,6 +52,7 @@ namespace ReadingTracker.Api.Controllers
         }
 
         [HttpPost("{userBookId:guid}/sessions")]
+        [ServiceFilter(typeof(PerformanceAuditFilter))]
         public async Task<IActionResult> LogSession(Guid userBookId, [FromBody] LogSessionRequest request, CancellationToken cancellationToken)
         {
             var userId = GetUserIdFromToken();

@@ -70,6 +70,8 @@ builder.Services.AddScoped<IReadingSessionRepository, ReadingSessionRepository>(
 // Services
 builder.Services.AddScoped<IUserBookService, UserBookService>();
 builder.Services.AddScoped<IReadingSessionService, ReadingSessionService>();
+builder.Services.AddScoped<ReadingTracker.Api.Filters.PerformanceAuditFilter>();
+builder.Services.AddHostedService<NightlyCleanupBackgroundService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
